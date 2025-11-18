@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useSigner, useAccount } from "wagmi";
-import { ethers } from "ethers";
+import { Contract } from "ethers";
 import ABI from "../abi/FeedbackBoard.json";
 
 const CONTRACT_ADDRESS = "0xD896C29176D244B502D8C6312fa96f3760545E16";
@@ -19,7 +19,8 @@ export default function SubmitFeedback() {
       return;
     }
     try {
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI.abi, signer);
+      // ethers v6 Contract
+      const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, signer);
       const tx = await contract.submitFeedback(message);
       setStatus("Waiting for transaction...");
       await tx.wait();
