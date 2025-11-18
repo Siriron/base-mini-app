@@ -1,6 +1,7 @@
 "use client";
+
 import { useState } from "react";
-import { useSigner, useAccount } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { Contract } from "ethers";
 import ABI from "../abi/FeedbackBoard.json";
 
@@ -8,25 +9,26 @@ const CONTRACT_ADDRESS = "0xD896C29176D244B502D8C6312fa96f3760545E16";
 
 export default function SubmitFeedback() {
   const { isConnected } = useAccount();
-  const { data: signer } = useSigner();
+  const { data: signerData } = useSigner(); // wagmi v1 returns { data, isError, isLoading }
 
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
 
   async function submit() {
-    if (!signer) {
+    if (!signerData) {
       setStatus("Connect your wallet first");
       return;
     }
+
     try {
-      // ethers v6 Contract
-      const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, signer);
+      const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, signerData);
       const tx = await contract.submitFeedback(message);
       setStatus("Waiting for transaction...");
       await tx.wait();
       setStatus("Feedback submitted!");
-    } catch (e: any) {
-      setStatus("Error: " + (e?.message ?? "Unknown error"));
+      setMessage(""); // clear textarea after submission
+    } catch (err: any) {
+      setStatus("Error: " + (err?.message ?? "Unknown error"));
     }
   }
 
@@ -45,7 +47,7 @@ export default function SubmitFeedback() {
       >
         Submit Feedback
       </button>
-      <p>{status}</p>
+      <p className="text-sm text-gray-700">{status}</p>
     </div>
   );
 }
