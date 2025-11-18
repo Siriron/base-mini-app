@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { JsonRpcProvider, Contract, BigNumber } from "ethers";
 import ABI from "../abi/FeedbackBoard.json";
 
 const CONTRACT_ADDRESS = "0xD896C29176D244B502D8C6312fa96f3760545E16";
@@ -16,10 +16,10 @@ export default function FeedbackList() {
 
   useEffect(() => {
     async function load() {
-      const provider = new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI.abi, provider);
+      const provider = new JsonRpcProvider("https://mainnet.base.org");
+      const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, provider);
 
-      const count: ethers.BigNumber = await contract.getFeedbackCount();
+      const count: BigNumber = await contract.getFeedbackCount();
       const len = count.toNumber();
       const items: Feedback[] = [];
 
@@ -31,6 +31,7 @@ export default function FeedbackList() {
           timestamp: fb.timestamp.toNumber(),
         });
       }
+
       setFeedbacks(items);
     }
 
