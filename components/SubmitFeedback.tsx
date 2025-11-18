@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useAccount, useSigner as useWagmiSigner } from "wagmi";
+import { useAccount, useSigner } from "wagmi";
 import { Contract } from "ethers";
 import ABI from "../abi/FeedbackBoard.json";
 
@@ -8,7 +8,7 @@ const CONTRACT_ADDRESS = "0xD896C29176D244B502D8C6312fa96f3760545E16";
 
 export default function SubmitFeedback() {
   const { isConnected } = useAccount();
-  const { data: signer } = useWagmiSigner(); // rename useSigner import
+  const { data: signer } = useSigner(); // wagmi v1.3+
 
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
@@ -18,6 +18,7 @@ export default function SubmitFeedback() {
       setStatus("Connect your wallet first");
       return;
     }
+
     try {
       const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, signer);
       const tx = await contract.submitFeedback(message);
