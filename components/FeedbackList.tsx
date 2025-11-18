@@ -1,6 +1,7 @@
 "use client";
+
 import { useEffect, useState } from "react";
-import { JsonRpcProvider, Contract, BigNumber } from "ethers";
+import { Contract, JsonRpcProvider, type BigNumberish } from "ethers";
 import ABI from "../abi/FeedbackBoard.json";
 
 const CONTRACT_ADDRESS = "0xD896C29176D244B502D8C6312fa96f3760545E16";
@@ -19,19 +20,18 @@ export default function FeedbackList() {
       const provider = new JsonRpcProvider("https://mainnet.base.org");
       const contract = new Contract(CONTRACT_ADDRESS, ABI.abi, provider);
 
-      const count: BigNumber = await contract.getFeedbackCount();
-      const len = count.toNumber();
-      const items: Feedback[] = [];
+      const count: BigNumberish = await contract.getFeedbackCount();
+      const len = Number(count);
 
+      const items: Feedback[] = [];
       for (let i = 0; i < len; i++) {
         const fb = await contract.getFeedback(i);
         items.push({
           sender: fb.sender,
           message: fb.message,
-          timestamp: fb.timestamp.toNumber(),
+          timestamp: Number(fb.timestamp),
         });
       }
-
       setFeedbacks(items);
     }
 
